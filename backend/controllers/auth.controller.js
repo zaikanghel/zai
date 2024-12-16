@@ -1,7 +1,9 @@
 import bcryptjs from "bcryptjs";
 import crypto from "crypto";
+import { nanoid } from "nanoid";
 
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
+import { fetchGeolocation } from "../utils/fetchGeolocation.js";
 import {
 	sendPasswordResetEmail,
 	sendResetSuccessEmail,
@@ -9,6 +11,61 @@ import {
 	sendWelcomeEmail,
 } from "../mailtrap/emails.js";
 import { User } from "../models/user.model.js";
+import { Url } from "../models/url.model.js";
+
+export const shortenUrl = async (req, res) => {
+	try {
+		const { url } = req.body;
+		if (!url) return res.status(400).json({ error: 'URL is required' });
+
+		const shortUrl = nanoid(7);
+		const newUrl = new Url({ originalUrl: url, shortUrl });
+
+		await newUrl.save();
+		res.json({ shortUrl: `/logger/${shortUrl}` });
+	} catch (error) {
+		console.error('Error generating short URL:', error);
+		res.status(500).json({ error: 'Server error' });
+	}
+};
+
+export const getOriginalUrl = async (req, res) => {
+		const { shortUrl } = req.params;
+		const url = await Url.findOne({ shortUrl });
+		if (!url) return res.status(404).json({ error: "URL not found" });
+
+		// Log visitor details
+		const visitorIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+		url.visits.push({ ip: visitorIp });
+		await url.save();
+
+		res.json({ originalUrl: url.originalUrl });
+};
+
+export const getLogs = async (req, res) => {
+		const { shortUrl } = req.params;
+		try {
+				const url = await Url.findOne({ shortUrl }).select('originalUrl shortUrl visits');
+				if (!url) return res.status(404).json({ error: 'URL not found' });
+
+				const visitsWithGeoInfo = await Promise.all(url.visits.map(async (visit) => {
+						const visitorIp = visit.ip.split(',')[0].trim(); // Extract the public IP address
+						const geolocationData = await fetchGeolocation(visitorIp);
+						return {
+								...visit.toObject(),
+								...geolocationData
+						};
+				}));
+
+				res.json({ ...url.toObject(), originalUrl: url.originalUrl,
+					shortUrl: url.shortUrl,
+					newUrl: `${req.protocol}://${req.get('host')}/${url.shortUrl}`,
+					loggerUrl: `${req.protocol}://${req.get('host')}/logger/${url.shortUrl}`, visits: visitsWithGeoInfo });
+		} catch (error) {
+				console.error('Error fetching logs:', error);
+				res.status(500).json({ error: 'Server error' });
+		}
+};
 
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
@@ -195,5 +252,23 @@ export const checkAuth = async (req, res) => {
 	} catch (error) {
 		console.log("Error in checkAuth ", error);
 		res.status(400).json({ success: false, message: error.message });
+	}
+};
+
+export const updateTime = async (req, res) => {
+	try {
+		const userId = req.userId; // Assuming you have authentication middleware to get the user ID
+		const { time } = req.body;
+
+		const updatedUser = await User.findByIdAndUpdate(
+			userId,
+			{ time },
+			{ new: true } // Return the updated document
+		);
+
+		res.json({ success: true, user: updatedUser });
+	} catch (error) {
+		console.error('Error updating time:', error);
+		res.status(500).json({ success: false, message: 'Failed to update time' });
 	}
 };

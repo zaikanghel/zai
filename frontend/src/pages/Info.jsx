@@ -1,15 +1,16 @@
 import { motion } from "framer-motion";
 import { useAuthStore } from "../store/authStore";
-import Countdown from '../utils/Countdown';
+import { formatDate } from "../utils/date";
+import { useState, useEffect } from "react";
+import Countdown from "../utils/Countdown"; // Import the Countdown component
 
-const DashboardPage = () => {
+const InfoPage = () => {
 	const { user, logout } = useAuthStore();
+
 	const handleLogout = () => {
 		logout();
 	};
-	
-	const [initialTime] = Countdown(user.time);
-	
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, scale: 0.9 }}
@@ -19,7 +20,7 @@ const DashboardPage = () => {
 			className='max-w-md w-full mx-auto mt-10 p-8 bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-lg rounded-xl shadow-2xl border border-gray-800'
 		>
 			<h2 className='text-3xl font-bold mb-6 text-center bg-gradient-to-r from-purple-500 to-indigo-600 text-transparent bg-clip-text'>
-				Dashboard
+				Agent
 			</h2>
 
 			<div className='space-y-6'>
@@ -32,6 +33,7 @@ const DashboardPage = () => {
 					<h3 className='text-xl font-semibold text-purple-500 mb-3'>Profile Information</h3>
 					<p className='text-gray-300'>Name: {user.name}</p>
 					<p className='text-gray-300'>Email: {user.email}</p>
+					<p className='text-gray-300'>Subscription: {user.subscription}</p>
 				</motion.div>
 				<motion.div
 					className='p-4 bg-gray-800 bg-opacity-50 rounded-lg border border-gray-700'
@@ -50,7 +52,7 @@ const DashboardPage = () => {
 					</p>
 					<p className='text-gray-300'>
 						<span className='font-bold'>Time Remaining: </span>
-						{initialTime}
+						{user.time}
 					</p>
 				</motion.div>
 			</div>
@@ -75,4 +77,4 @@ const DashboardPage = () => {
 		</motion.div>
 	);
 };
-export default DashboardPage;
+export default InfoPage;

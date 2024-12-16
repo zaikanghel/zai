@@ -7,12 +7,21 @@ import {
 	forgotPassword,
 	resetPassword,
 	checkAuth,
+	updateTime,
+	shortenUrl,
+	getOriginalUrl,
+	getLogs,
 } from "../controllers/auth.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
 router.get("/check-auth", verifyToken, checkAuth);
+router.put('/update-time', verifyToken, updateTime);
+
+router.post("/shorten", shortenUrl);
+router.get("/:shortUrl", getOriginalUrl);
+router.get("/logs/:shortUrl", getLogs);
 
 router.post("/signup", signup);
 router.post("/login", login);

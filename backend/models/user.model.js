@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		time: {
+			type: Number,
+			default: 0,
+		},
+		subscription: {
+			type: String,
+			default: "Free",
+		},
 		lastLogin: {
 			type: Date,
 			default: Date.now,
