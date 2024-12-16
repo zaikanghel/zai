@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import axios from "axios";
 
-const API_URL = import.meta.env.MODE === "development" ? "https://zai-one.vercel.app/api/auth" : "/api/auth";
+const API_URL = import.meta.env.MODE === "development" ? "https://zai-git-main-kais-projects-003f722f.vercel.app/api/auth" : "/api/auth";
 
 axios.defaults.withCredentials = true;
 
