@@ -294,8 +294,8 @@ function Container(props) {
             <div style={{ padding: '1rem' }}>
               <h2 style={{ fontSize: '1.25rem', fontWeight: '600' }}>Code Information</h2>
               <p><strong>Code:</strong> {props.meetingId}</p>
-              <p><strong>Client View:</strong> <a href="/" style={{ color: '#007bff', textDecoration: 'underline' }}>http://localhost:5000/zflix/{props.meetingId}</a></p>
-              <p><strong>Agent View:</strong> <a href="/" style={{ color: '#007bff', textDecoration: 'underline' }}>http://localhost:5000/viewer/{props.meetingId}</a></p>
+              <p><strong>Client View:</strong> <a href="/" style={{ color: '#007bff', textDecoration: 'underline' }}>https://zai-1r17.onrender.com/zflix/{props.meetingId}</a></p>
+              <p><strong>Agent View:</strong> <a href="/" style={{ color: '#007bff', textDecoration: 'underline' }}>https://zai-1r17.onrender.com/viewer/{props.meetingId}</a></p>
             </div>
           </div>
           <div style={{ margin: '16px 0', padding: '16px', backgroundColor: '#FEE2E2', borderLeft: '4px solid #EA5858', color: '#B91C1C' }}>
